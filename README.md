@@ -1,4 +1,4 @@
 DancingOrigini
 ==============
 
-Html5 Dancing Origini Clone (Rhythm Game like Dance Dance Revolution, Stepmania ...)
+Html5 Dancing Onigiri Clone (Rhythm Game like Dance Dance Revolution, Stepmania ...)

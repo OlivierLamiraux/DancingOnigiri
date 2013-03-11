@@ -3,18 +3,34 @@
  */
 define(["danoni/sequencer"], function(Sequencer){
    return function(Q) {
-       Q.scene("test", function(stage) {
+       Q.scene("test", function(stage, options) {
+           console.log(options);
+           console.log(stage);
+       });
+
+       var createReceptors = function(stage) {
+        var ry = Q.danoni,
+            x = 50,
+            options = function(pos) {
+                return {x: x*pos+25, y: ry};
+            };
+        stage.insert(new Q.ArrowReceptorLeft(options(0)));
+        stage.insert(new Q.ArrowReceptorDown(options(1)));
+        stage.insert(new Q.OnigiriReceptor(options(2)));
+        stage.insert(new Q.ArrowReceptorUp(options(3)));
+        stage.insert(new Q.ArrowReceptorRight(options(4)));
+           
+       };
+
+       Q.scene("playground", function(stage) {
         stage.on("prerender", function(ctx) {
             ctx.fillStyle = "#000000";
             ctx.fillRect(0,0,Q.width,Q.height);
         });
         var S = new Sequencer(Q);
-        var receptorY = Q.height - 50;
-        var leftReceptor = stage.insert(new Q.ArrowReceptor({x: 40*0+25, y:receptorY, angle:90}));
-        var downReceptor = stage.insert(new Q.ArrowReceptor({x: 40*1+25, y:receptorY}));
-        var onigiriReceptor = stage.insert(new Q.OnigiriReceptor({x: 40*2+25, y:receptorY}));
-        var upReceptor = stage.insert(new Q.ArrowReceptor({x: 40*3+25, y:receptorY, angle:180}));
-        var rightReceptor = stage.insert(new Q.ArrowReceptor({x: 40*4+25, y:receptorY, angle:-90}));
+        
+        createReceptors(stage);
+        
         var current = 2800;
         stage.on("step", function(dt) {
             Q("ArrowRed").destroy();
@@ -47,34 +63,6 @@ define(["danoni/sequencer"], function(Sequencer){
             Q._each(notes['4'], function(y) {
                     stage.insert(new Q.ArrowRed({x:width*4+25, y:y, angle:-90}))
             });
-
-            // keyboard
-            if (Q.inputs["left"]) {
-                leftReceptor.p.asset = "arrow_down_active.png";
-            } else {
-                leftReceptor.p.asset = "arrow_down.png";
-            }
-            if (Q.inputs["down"]) {
-                downReceptor.p.asset = "arrow_down_active.png";
-            } else {
-                downReceptor.p.asset = "arrow_down.png";
-            }
-            if (Q.inputs["fire"]) {
-                onigiriReceptor.p.asset = "onigiri_active.png";
-            } else {
-                onigiriReceptor.p.asset = "onigiri.png";
-            }
-            if (Q.inputs["up"]) {
-                upReceptor.p.asset = "arrow_down_active.png";
-            } else {
-                upReceptor.p.asset = "arrow_down.png";
-            }
-            if (Q.inputs["right"]) {
-                rightReceptor.p.asset = "arrow_down_active.png";
-            } else {
-                rightReceptor.p.asset = "arrow_down.png";
-            }
-            
         })
     });
    }; 

@@ -33,12 +33,20 @@ function(doc, Quintus, sprites, scenes) {
     
     // Init Quintus Scenes
     scenes(Q);
-    
+   
+    // Options for the game
+    Q.danoniOptions = {
+        receptorY : Q.height - 50
+    };
+
     // Load Asset and launch the game
     Q.load(["arrow_down.png","arrow_down_active.png",
             "arrow_down_green.png","arrow_down_red.png",
             "onigiri.png","onigiri_active.png", "onigiri_play.png"], function() {
 
-        Q.stageScene("test");
+        Q.stageScene("playground", {truc : 3});
     });
+
+    // For debug propose
+    window.Q = Q;
 });

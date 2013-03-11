@@ -47,27 +47,58 @@ define(function() {
           }
         });
     
-        Q.Sprite.extend("ArrowReceptor", {
+        Q.Sprite.extend("ArrowReceptorDown", {
           init: function(p) {
             this._super(p,{
               x: 100,
               y: 0,
               scale : 0.4,
               asset: "arrow_down.png",
-              isActive : false
+              key : "down"
             });
+            this.p.activeAsset = "arrow_down_active.png";
+            this.p.inactiveAsset = this.p.asset;
+          },
+          step: function(ct) {
+            var p = this.p;
+            if (Q.inputs[p.key]) {
+                p.asset = p.activeAsset;
+            } else {
+                p.asset = p.inactiveAsset;
+            }
           }
          });
     
     
-        Q.Sprite.extend("OnigiriReceptor", {
+        Q.ArrowReceptorDown.extend("ArrowReceptorLeft", {
           init: function(p) {
-            this._super(p,{
-              x: 100,
-              y: 0,
-              scale : 0.4,
-              asset: "onigiri.png"
+            Q._defaults(p,{ key: "left", angle: 90 });
+            this._super(p);
+          }
+        });
+        
+        Q.ArrowReceptorDown.extend("ArrowReceptorRight", {
+          init: function(p) {
+            Q._defaults(p,{ key: "right", angle: -90 });
+            this._super(p);
+          }
+        });
+        
+        Q.ArrowReceptorDown.extend("ArrowReceptorUp", {
+          init: function(p) {
+            Q._defaults(p,{ key: "up", angle: 180 });
+            this._super(p);
+          }
+        });
+
+        Q.ArrowReceptorDown.extend("OnigiriReceptor", {
+          init: function(p) {
+            Q._defaults(p,{
+              asset: "onigiri.png",
+              key: "fire"
             });
+            this._super(p);
+            this.p.activeAsset = "onigiri_active.png";
           }
         }); 
     };
