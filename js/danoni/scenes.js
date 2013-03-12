@@ -9,7 +9,7 @@ define(["danoni/sequencer"], function(Sequencer){
        });
 
        var createReceptors = function(stage) {
-        var ry = Q.danoni,
+        var ry = Q.height-50,
             x = 50,
             options = function(pos) {
                 return {x: x*pos+25, y: ry};

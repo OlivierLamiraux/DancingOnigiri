@@ -59,11 +59,12 @@ require(["danoni/sequencer2"], function(Sequencer) {
     test( "define position of the receptor", function() {
         var s = new Sequencer({height:400, display: 1500});
         
-        // Possision of the receptor
-        s.receptor(350);
+        // Possision of the receptor relative to edge
+        s.receptor(50);
         
         // Assert
-        equal(s.receptor(), 350, "display by options is ok" );
+        equal(s.receptor(), 50, "receptor is ok" );
+        equal(s.receptorHeight(), 350, "receptorHeight is ok" );
         
         // Exception
         throws(
@@ -83,9 +84,10 @@ require(["danoni/sequencer2"], function(Sequencer) {
     });
     
     test( "define receptor by options in constuctor", function() {
-        var s = new Sequencer({receptor:380});
+        var s = new Sequencer({receptor:50});
         
-        equal(s.receptor(), 380, "receptor by options is ok");
+        equal(s.receptor(), 50, "receptor by options is ok");
+        equal(s.receptorHeight(), 370, "receptorHeight is ok" );
     });
     
     test( "method receptorTime give the time relative to display options", function() {
@@ -93,28 +95,65 @@ require(["danoni/sequencer2"], function(Sequencer) {
                     {
                         height:500,
                         display:1000,
-                        receptor:450
+                        receptor:50
                     }
                 );
         
         equal(s.receptorTime(), 900, "receptorTime is ok");
     });
     
-    test("", function() {
+    test("init sequences", function() {
         var s = new Sequencer();
         
-        s.sequence({
+        var sequences = {
            0 : [125, 2000, ],
-           0 : [125, 2000, ],
-           0 : [125, 2000, ],
-           0 : [125, 2000, ],
-           0 : [125, 2000, ], 
-        });
+           1 : [125, 2000, ],
+           2 : [125, 2000, ],
+           3 : [125, 2000, ],
+           4 : [125, 2000, ], 
+        };
+
+        s.sequences(sequences);
+
+        equal(s.sequences(), sequences, "init sequences ok");
     });
     
-});
+    test("heightNotes", function() {
+        var s = new Sequencer(
+                    {
+                        height:500,
+                        display:1000,
+                        receptor:50
+                    }
+                );
+        s.sequences({ 0 : [0, 200, 900] });
+        var result = s.heightNotes(0);
+        var expected = { 0 : [450, 350, 0]};
 
-require(["danoni/sequencer2"], function(Sequencer) {
-    module("Sequencer");
+        deepEqual(result, expected, "heightNotes is ok");
+    });
     
+    test("hit", function() {
+        var s = new Sequencer();
+        s.sequences({ 0 : [0, 200, 880] });
+        
+        s.hit(0, 200);
+        var result = s.availableNotes(0, 0);
+        var expected = [0, 880];
+        
+        deepEqual(result, expected, "hit is ok");
+    });
+    
+    test("hit with judge", function() {
+        var s = new Sequencer();
+        s.sequences({ 0 : [0, 200, 880] });
+        
+        var judge = s.hit(0, 179);
+        var expectedJudge = "Marvelous";
+        var result = s.availableNotes(0, 0);
+        var expected = [0, 880];
+        
+        deepEqual(result, expected, "hit is ok");
+        equal(judge, expectedJudge, "Judge is ok");
+    });
 });
