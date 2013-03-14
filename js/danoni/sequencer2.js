@@ -10,7 +10,12 @@ define(function () {
             display = options.display || 1000,
             receptor = options.receptor || 50
             sequences = {},
-            notesHit = {};
+            score = { boo : 0,
+                      good : 0,
+                      great :0,
+                      perfect : 0,
+                      marvelous : 0
+                    };
             
         _.height = function(h) {
             if (h ===  undefined) return screenHeight;
@@ -84,10 +89,10 @@ define(function () {
         };
         
         _.hit = function (lane, time) {
-            var track = _.availableNotes(lane, time),
+            var track = _.availableNotes(lane, time, true),
                 trackLength = track.length,
                 i, timediff,
-                result = "",
+                result = void 0,
                 boo = 180,
                 good = 135,
                 great = 102,
@@ -95,24 +100,27 @@ define(function () {
                 marvelous = 21.5;
             
             for (i = 0; i < trackLength; i += 1) {
-                notesHit[lane] = notesHit[lane] || {};
-                notesHit[lane][track[i]] = notesHit[lane][track[i]] || false;
-                timeDiff = Math.abs(track[i] - time);
+                timeDiff = Math.abs(track[i].time - time);
 
                 if (timeDiff <= marvelous) {
                     result = "Marvelous";
+                    score.marvelous += 1;
                 } else if (timeDiff <= perfect) {
                     result = "Perfect";
+                    score.perfect += 1;
                 } else if (timeDiff <= great) {
                     result = "Great";
+                    score.great += 1;
                 } else if (timeDiff <= good) {
                     result = "Good";
+                    score.good += 1;
                 } else if (timeDiff <= boo) {
                     result = "Boo";
+                    score.boo += 1;
                 }
                 
-                if (result !== "" && !notesHit[lane][track[i]]) {
-                    notesHit[lane][track[i]] = true;
+                if (result !== void 0) {
+                    sequences[lane].splice(track[i].index, 1);
                     return result;
                 }
             }
@@ -120,7 +128,9 @@ define(function () {
             return false;
         };
         
-        _.availableNotes = function (lane, time) {
+        _.availableNotes = function (lane, time, hasIndex) {
+            hasIndex = hasIndex || false;
+            
             var i, result = [],
                 begin = time + _.receptorTime(),
                 end = time - (display - _.receptorTime()),
@@ -128,9 +138,13 @@ define(function () {
                 trackLength = track.length;
                 
             for (i = 0; i < trackLength; i += 1) {
-                if (track[i] >= end && track[i] <= begin && 
-                    (notesHit[lane] === undefined || notesHit[lane][track[i]] === undefined || notesHit[lane][track[i]] === false) ) {
-                    result.push(track[i]); 
+                if (track[i] >= end && track[i] <= begin) {
+                    if (hasIndex) {
+                        result.push( { time : track[i], index : i }); 
+                    } else {
+                        result.push(track[i]);
+                    }
+                    
                 }
             }
             
