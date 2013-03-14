@@ -1,7 +1,7 @@
 /**
  * @author OLAMIRAUX
  */
-define(["danoni/sequencer2"], function(Sequencer) {
+define(["danoni/sequencer2", "text!datas/sequences.json"], function(Sequencer, jsonText) {
     return function() {
         module( "Sequencer" );
     
@@ -123,6 +123,13 @@ define(["danoni/sequencer2"], function(Sequencer) {
             var expected = { 0 : [450, 350, 0]};
     
             deepEqual(result, expected, "heightNotes is ok");
+        });
+        
+        test("init sequence from json file", function() {
+            var s = new Sequencer();
+            s.sequences(JSON.parse(jsonText));
+            
+            ok(s.heightNotes(22050));
         });
         
         test("hit", function() {

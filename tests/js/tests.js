@@ -4,7 +4,8 @@
 requirejs.config({
     baseUrl: "../js",
     paths: {
-        unit : '../tests/js/unit'
+        unit : '../tests/js/unit',
+        datas : '../datas'
     },
     shim: {
         'quintus/quintus': {
@@ -14,9 +15,10 @@ requirejs.config({
 });
 QUnit.stop();
 require(
-    [ "unit/sequencer" ],
-    function(sequencerTest) {
+    [ "unit/sequencer", "unit/eventedSequencer" ],
+    function(sequencerTest, eventedSequencer) {
         QUnit.start();
         sequencerTest();
+        eventedSequencer();
     }
 );

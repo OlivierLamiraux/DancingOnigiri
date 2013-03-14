@@ -3,19 +3,63 @@
  */
 define(["danoni/sequencer", "danoni/sequencer2"], function(Sequencer, Sequencer2){
     return function(Q) {
+        
+        var laneX = [25, 70, 120, 170, 215],
+            arrows = [];
+        
         Q.scene("test", function(stage, options) {
             var S = new Sequencer2({
                 height : Q.height
             });
             stage.insert(new Q.Background());
-            createReceptors(stage, S.receptorRevert())
+            createReceptors(stage, S.receptorRevert());
+            
+            
+            stage.on("step", function(dt) {
+                destroyAllArrow();
+                createArrow(stage, 0, 100);
+                createArrow(stage, 1, 100);
+                createArrow(stage, 2, 100);
+                createArrow(stage, 3, 100);
+                createArrow(stage, 4, 100);
+            });
         });
-
+        
+        var destroyAllArrow = function() {
+            var i, arrowsLength = arrows.length;
+            for (i = 0; i < arrowsLength; i += 1) {
+                arrows[i].destroy();
+            }
+            arrows = [];
+        };
+        
+        var createArrow = function(stage, lane, y) {
+            var props = {x:laneX[lane], y:y};
+            
+            switch(lane) {
+                case 0 :
+                    arrows.push(stage.insert(new Q.ArrowLeft(props)));
+                    break;
+                case 1 :
+                    arrows.push(stage.insert(new Q.ArrowDown(props)));
+                    break;
+                case 2 :
+                    arrows.push(stage.insert(new Q.Origini(props)));
+                    break;
+                case 3 :
+                    arrows.push(stage.insert(new Q.ArrowUp(props)));
+                    break;
+                case 4 :
+                    arrows.push(stage.insert(new Q.ArrowRight(props)));
+                    break;
+            }
+        };
+        
         var createReceptors = function(stage, receptorY) {
             var ry = receptorY || Q.height-50,
                 x = 50,
                 options = function(pos) {
-                    return {x: x*pos+25, y: ry};
+                    return {x: laneX[pos], y: ry};
                 };
                 
             stage.insert(new Q.ArrowReceptorLeft(options(0)));
@@ -24,49 +68,5 @@ define(["danoni/sequencer", "danoni/sequencer2"], function(Sequencer, Sequencer2
             stage.insert(new Q.ArrowReceptorUp(options(3)));
             stage.insert(new Q.ArrowReceptorRight(options(4)));
         };
-
-       Q.scene("playground", function(stage) {
-        stage.on("prerender", function(ctx) {
-            ctx.fillStyle = "#000000";
-            ctx.fillRect(0,0,Q.width,Q.height);
-        });
-        var S = new Sequencer(Q);
-        
-        createReceptors(stage);
-        
-        var current = 2800;
-        stage.on("step", function(dt) {
-            Q("ArrowRed").destroy();
-            Q("ArrowGreen").destroy();
-            Q("ArrowYellow").destroy();
-            //var current = song.controller.currentTime*100+2000;
-            current += dt*20;
-            
-            var notes = S.notes(current);
-            var width = 40;
-            
-            var createNotes = function(pos, width, asset) {
-                return function(y) {
-                    stage.insert(new Q.Arrow({ x:width*pos+25, y:y, w:width}))
-                };
-            };
-    
-            Q._each(notes['0'], function(y) {
-                    stage.insert(new Q.ArrowRed({x:width*0+25, y:y, angle:90}))
-            });
-            Q._each(notes['1'], function(y) {
-                    stage.insert(new Q.ArrowGreen({x:width*1+25, y:y}))
-            });
-            Q._each(notes['2'], function(y) {
-                    stage.insert(new Q.ArrowYellow({x:width*2+25, y:y}))
-            });
-            Q._each(notes['3'], function(y) {
-                    stage.insert(new Q.ArrowGreen({x:width*3+25, y:y, angle:180}))
-            });
-            Q._each(notes['4'], function(y) {
-                    stage.insert(new Q.ArrowRed({x:width*4+25, y:y, angle:-90}))
-            });
-        })
-    });
    }; 
 });

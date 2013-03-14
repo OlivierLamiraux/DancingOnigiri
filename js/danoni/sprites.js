@@ -25,35 +25,38 @@ define(function() {
           }
         });
     
-        Q.Arrow.extend("ArrowRed", {
+        Q.Arrow.extend("ArrowLeft", {
           init: function(p) {
-            this._super(p,{
-              x: 100,
-              y: 0,
-              scale : 0.4,
-              asset: "arrow_down_red.png"
-            });
+            Q._defaults(p,{ asset: "arrow_down_red.png", angle: 90 });
+            this._super(p);
           }
         });
-        Q.Sprite.extend("ArrowGreen", {
+        
+        Q.Arrow.extend("ArrowRight", {
           init: function(p) {
-            this._super(p,{
-              x: 100,
-              y: 0,
-              scale : 0.4,
-              asset: "arrow_down_green.png"
-            });
+            Q._defaults(p,{ asset: "arrow_down_red.png", angle: -90 });
+            this._super(p);
+          }
+        });
+        
+        Q.Arrow.extend("ArrowDown", {
+          init: function(p) {
+            Q._defaults(p,{ asset: "arrow_down_green.png" });
+            this._super(p);
+          }
+        });
+        
+        Q.Arrow.extend("ArrowUp", {
+          init: function(p) {
+            Q._defaults(p,{ asset: "arrow_down_green.png", angle: 180 });
+            this._super(p);
           }
         });
     
-        Q.Sprite.extend("ArrowYellow", {
+        Q.Arrow.extend("Origini", {
           init: function(p) {
-            this._super(p,{
-              x: 100,
-              y: 0,
-              scale : 0.4,
-              asset: "onigiri_play.png"
-            });
+            Q._defaults(p,{ asset: "onigiri_play.png" });
+            this._super(p);
           }
         });
     
