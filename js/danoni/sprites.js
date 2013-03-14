@@ -5,6 +5,16 @@ define(function() {
     
     return function(Q) {
       
+        Q.Sprite.extend("Background", {
+          init: function(p) {
+              this._super(p);
+          },
+          draw : function(ctx) {
+              ctx.fillStyle = "#000000";
+              ctx.fillRect(0,0,Q.width,Q.height);
+          }
+        });
+        
         Q.Sprite.extend("Arrow", {
           init: function(p) {
             this._super(p,{

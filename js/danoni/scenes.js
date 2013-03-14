@@ -1,25 +1,29 @@
 /**
  * @author Olivier Lamiraux
  */
-define(["danoni/sequencer"], function(Sequencer){
-   return function(Q) {
-       Q.scene("test", function(stage, options) {
-           stage.insert(new Q.ArrowReceptorLeftHit());
-       });
+define(["danoni/sequencer", "danoni/sequencer2"], function(Sequencer, Sequencer2){
+    return function(Q) {
+        Q.scene("test", function(stage, options) {
+            var S = new Sequencer2({
+                height : Q.height
+            });
+            stage.insert(new Q.Background());
+            createReceptors(stage, S.receptorRevert())
+        });
 
-       var createReceptors = function(stage) {
-        var ry = Q.height-50,
-            x = 50,
-            options = function(pos) {
-                return {x: x*pos+25, y: ry};
-            };
-        stage.insert(new Q.ArrowReceptorLeft(options(0)));
-        stage.insert(new Q.ArrowReceptorDown(options(1)));
-        stage.insert(new Q.OnigiriReceptor(options(2)));
-        stage.insert(new Q.ArrowReceptorUp(options(3)));
-        stage.insert(new Q.ArrowReceptorRight(options(4)));
-           
-       };
+        var createReceptors = function(stage, receptorY) {
+            var ry = receptorY || Q.height-50,
+                x = 50,
+                options = function(pos) {
+                    return {x: x*pos+25, y: ry};
+                };
+                
+            stage.insert(new Q.ArrowReceptorLeft(options(0)));
+            stage.insert(new Q.ArrowReceptorDown(options(1)));
+            stage.insert(new Q.OnigiriReceptor(options(2)));
+            stage.insert(new Q.ArrowReceptorUp(options(3)));
+            stage.insert(new Q.ArrowReceptorRight(options(4)));
+        };
 
        Q.scene("playground", function(stage) {
         stage.on("prerender", function(ctx) {
