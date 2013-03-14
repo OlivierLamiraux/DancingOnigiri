@@ -100,6 +100,24 @@ define(function() {
             this._super(p);
             this.p.activeAsset = "onigiri_active.png";
           }
-        }); 
+        });
+
+        Q.Sprite.extend("ArrowReceptorLeftHit", {
+          init: function(p) {
+            this._super(p,{
+              x: 100,
+              y: 100,
+              scale : 0.4,
+              asset: "arrow_down.png",
+              opacity : 0.4
+            });
+          },
+            step: function(dt) {
+                this.p.scale += dt*4;
+                if (this.p.scale > 1.5) {
+                    this.destroy();
+                }
+            }
+        });
     };
 });

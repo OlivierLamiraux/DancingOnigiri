@@ -44,7 +44,8 @@ function(doc, Quintus, sprites, scenes) {
             "arrow_down_green.png","arrow_down_red.png",
             "onigiri.png","onigiri_active.png", "onigiri_play.png"], function() {
 
-        Q.stageScene("playground", {truc : 3});
+        //Q.stageScene("playground", {truc : 3});
+        Q.stageScene("test");
     });
 
     // For debug propose

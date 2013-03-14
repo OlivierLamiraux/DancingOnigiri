@@ -4,8 +4,7 @@
 define(["danoni/sequencer"], function(Sequencer){
    return function(Q) {
        Q.scene("test", function(stage, options) {
-           console.log(options);
-           console.log(stage);
+           stage.insert(new Q.ArrowReceptorLeftHit());
        });
 
        var createReceptors = function(stage) {
