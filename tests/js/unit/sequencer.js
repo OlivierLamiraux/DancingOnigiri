@@ -158,13 +158,25 @@ define(["danoni/sequencer2", "text!datas/sequences.json"], function(Sequencer, j
         
         test("hit one at once", function() {
             var s = new Sequencer();
-            s.sequences({ 0 : [0, 200, 100] });
+            s.sequences({ 0 : [0, 200, 800] });
             
             s.hit(0, 200);
             var result = s.availableNotes(0, 0);
-            var expected = [0, 100];
+            var expected = [0, 800];
             
             deepEqual(result, expected, "hit one at once is ok");
+        });
+        
+        test("hitLong and releaseLong (long notes)", function() {
+            var s = new Sequencer();
+            s.sequences({ 0 : [200, 800] });
+            
+            var resultHit = s.hitLong(0, 200);
+            var resultRelease = s.releaseRelease(0, 800);
+            
+            ok(resultHit);
+            ok(resultRelease);
+            
         });
         
         test("maxTime", function() {
