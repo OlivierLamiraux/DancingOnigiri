@@ -132,5 +132,23 @@ define(function() {
                 }
             }
         });
+        
+        Q.Sprite.extend("OnigiriHit", {
+          init: function(p) {
+            this._super(p,{
+              x: 100,
+              y: 100,
+              scale : 0.4,
+              asset: "onigiri.png",
+              opacity : 0.4
+            });
+          },
+            step: function(dt) {
+                this.p.scale += dt*4;
+                if (this.p.scale > 1.5) {
+                    this.destroy();
+                }
+            }
+        });
     };
 });

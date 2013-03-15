@@ -155,5 +155,29 @@ define(["danoni/sequencer2", "text!datas/sequences.json"], function(Sequencer, j
             deepEqual(result, expected, "hit is ok");
             equal(judge, expectedJudge, "Judge is ok");
         });
+        
+        test("hit one at once", function() {
+            var s = new Sequencer();
+            s.sequences({ 0 : [0, 200, 100] });
+            
+            s.hit(0, 200);
+            var result = s.availableNotes(0, 0);
+            var expected = [0, 100];
+            
+            deepEqual(result, expected, "hit one at once is ok");
+        });
+        
+        test("maxTime", function() {
+            var s = new Sequencer();
+            s.sequences({ 
+                0 : [0, 200, 100],
+                1 : [0, 200, 500],
+                2 : [0, 200, 90000]
+            });
+            
+            var expected = 90000;
+            
+            equal(s.maxTime(), expected, "maxTime is ok")
+        })
     }
 });

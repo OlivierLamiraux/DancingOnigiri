@@ -2,6 +2,9 @@
  * @author Olivier Lamiraux
  */
 requirejs.config({
+    paths: {
+        datas : '../datas'
+    },
     shim: {
         'quintus/quintus': {
             exports: 'Quintus'
@@ -19,10 +22,10 @@ requirejs.config({
 
 require(
     ["domReady!", "quintus/quintus", 
-     "danoni/sprites", "danoni/scenes",
+     "danoni/sprites", "danoni/scene_playground",
      "quintus/quintus_scenes", "quintus/quintus_sprites", "quintus/quintus_input"], 
 
-function(doc, Quintus, sprites, scenes) {
+function(doc, Quintus, sprites, scenePlayground) {
     var Q = Quintus()                         
               .include("Sprites, Scenes, Input") 
               .setup()                           
@@ -32,7 +35,7 @@ function(doc, Quintus, sprites, scenes) {
     sprites(Q);
     
     // Init Quintus Scenes
-    scenes(Q);
+    scenePlayground(Q);
    
     // Options for the game
     Q.danoniOptions = {
@@ -45,7 +48,7 @@ function(doc, Quintus, sprites, scenes) {
             "onigiri.png","onigiri_active.png", "onigiri_play.png"], function() {
 
         //Q.stageScene("playground", {truc : 3});
-        Q.stageScene("test");
+        Q.stageScene("playground");
     });
 
     // For debug propose

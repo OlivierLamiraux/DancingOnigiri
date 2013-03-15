@@ -10,6 +10,7 @@ define(function () {
             display = options.display || 1000,
             receptor = options.receptor || 50
             sequences = {},
+            maxTime = 0,
             score = { boo : 0,
                       good : 0,
                       great :0,
@@ -55,9 +56,22 @@ define(function () {
         };
 
         _.sequences = function(seq) {
+            var i, track, trackLength;
+             
             if (seq ===  undefined) return sequences;
 
             sequences = seq;
+            for (lane in sequences) {
+                if (sequences.hasOwnProperty(lane)) {
+                    track = sequences[lane];
+                    trackLength = track.length;
+                    for (i = 0; i < trackLength; i += 1) {
+                        if (track[i] > maxTime) {
+                            maxTime = track[i];
+                        }
+                    }
+                }
+            }
         };
 
         // Return all notes available for display
@@ -149,6 +163,10 @@ define(function () {
             }
             
             return result;
+        }
+        
+        _.maxTime = function() {
+            return maxTime;
         }
     };
 });
