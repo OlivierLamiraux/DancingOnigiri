@@ -15,10 +15,9 @@ requirejs.config({
 });
 QUnit.stop();
 require(
-    [ "unit/sequencer", "unit/eventedSequencer" ],
-    function(sequencerTest, eventedSequencer) {
+    [ "unit/sequencer" ],
+    function(sequencerTest) {
         QUnit.start();
         sequencerTest();
-        eventedSequencer();
     }
 );
