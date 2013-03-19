@@ -1,7 +1,7 @@
 /**
  * @author Olivier Lamiraux
  */
-define(["danoni/sequencer2", "text!datas/sequences.json"], function(Sequencer, seqJson){
+define(["danoni/sequencer2", "text!datas/sequencesTest.json"], function(Sequencer, seqJson){
     return function(Q) {
         
         var laneX = [25, 70, 120, 170, 215],
@@ -32,11 +32,17 @@ define(["danoni/sequencer2", "text!datas/sequences.json"], function(Sequencer, s
             stage.insert(new Q.Background());
             createReceptors(stage, S.receptorRevert());
             
-            var tempTimer = 21500;
+            var tempTimer = 0;
             stage.on("step", function(dt) {
-                var currentTime = (tempTimer += dt*900),
+                var currentTime = (tempTimer += dt*90),
                     laneHit = false,
                     resultHit = false;
+
+                // TODO Remove this Loop
+                if (currentTime - 500 > S.maxTime()) {
+                    tempTimer = 500;
+                }
+
                 destroyAllArrow();
                 createArrows(stage, S.heightNotes(currentTime));
                 
@@ -57,6 +63,7 @@ define(["danoni/sequencer2", "text!datas/sequences.json"], function(Sequencer, s
                 }
                 keyReady[key] = false;
             } else if (!Q.inputs[key]) {
+                s.release(lane, currentTime);
                 keyReady[key] = true;
             }
         };
@@ -98,8 +105,59 @@ define(["danoni/sequencer2", "text!datas/sequences.json"], function(Sequencer, s
                     createArrow(stage, 2, notesOrigini[i]);
                 }
         };
+       
         
-        var createArrow = function(stage, lane, y) {
+        var createArrow = function(stage, lane, note) {
+            var isLongNote = Array.isArray(note);
+            
+            if (isLongNote) {
+                createLongArrow(stage, lane, note);
+            } else {
+                createSimpleArrow(stage, lane, note);
+            }
+        };
+
+        var createLongArrow = function(stage, lane, y) {
+            var propsBegin = {x:laneX[lane], y:y[0]},
+                propsEnd = {x:laneX[lane], y:y[1]},
+                propsBar = {x:laneX[lane], y:y[1] + ((y[0] - y[1])/2), h: y[1] - y[0], w: 30};
+            
+            switch(lane) {
+                case 0 :
+                    propsBar.color = "red";
+                    arrows.push(stage.insert(new Q.Bar(propsBar)));
+                    arrows.push(stage.insert(new Q.ArrowLeft(propsBegin)));
+                    arrows.push(stage.insert(new Q.ArrowLeft(propsEnd)));
+                    break;
+                case 1 :
+                    propsBar.color = "green";
+                    arrows.push(stage.insert(new Q.Bar(propsBar)));
+                    arrows.push(stage.insert(new Q.ArrowDown(propsBegin)));
+                    arrows.push(stage.insert(new Q.ArrowDown(propsEnd)));
+                    break;
+                case 2 :
+                    propsBar.color = "yellow";
+                    arrows.push(stage.insert(new Q.Bar(propsBar)));
+                    arrows.push(stage.insert(new Q.Origini(propsBegin)));
+                    arrows.push(stage.insert(new Q.Origini(propsEnd)));
+                    break;
+                case 3 :
+                    propsBar.color = "green";
+                    arrows.push(stage.insert(new Q.Bar(propsBar)));
+                    arrows.push(stage.insert(new Q.ArrowUp(propsBegin)));
+                    arrows.push(stage.insert(new Q.ArrowUp(propsEnd)));
+                    break;
+                case 4 :
+                    propsBar.color = "red";
+                    arrows.push(stage.insert(new Q.Bar(propsBar)));
+                    arrows.push(stage.insert(new Q.ArrowRight(propsBegin)));
+                    arrows.push(stage.insert(new Q.ArrowRight(propsEnd)));
+                    break;
+            }
+        
+        };
+
+        var createSimpleArrow = function(stage, lane, y) {
             var props = {x:laneX[lane], y:y};
             
             switch(lane) {

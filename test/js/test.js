@@ -3,8 +3,11 @@
  */
 requirejs.config({
     baseUrl: "../js",
+    map : {
+        sequencer : 'danoni/sequencer2'
+    },
     paths: {
-        unit : '../tests/js/unit',
+        unit : '../test/js/unit',
         datas : '../datas'
     },
     shim: {
@@ -15,9 +18,10 @@ requirejs.config({
 });
 QUnit.stop();
 require(
-    [ "unit/sequencer" ],
-    function(sequencerTest) {
+    [ "unit/sequencer", "unit/sequencer.long" ],
+    function(unit0, unit1) {
         QUnit.start();
-        sequencerTest();
+        unit0();
+        unit1();
     }
 );

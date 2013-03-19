@@ -10,6 +10,7 @@ define(function () {
             display = options.display || 1000,
             receptor = options.receptor || 50
             sequences = {},
+            currentLongNotes = {},
             maxTime = 0,
             score = { boo : 0,
                       good : 0,
@@ -56,7 +57,7 @@ define(function () {
         };
 
         _.sequences = function(seq) {
-            var i, track, trackLength;
+            var i, track, trackLength, time = 0;
              
             if (seq ===  undefined) return sequences;
 
@@ -66,8 +67,14 @@ define(function () {
                     track = sequences[lane];
                     trackLength = track.length;
                     for (i = 0; i < trackLength; i += 1) {
-                        if (track[i] > maxTime) {
-                            maxTime = track[i];
+                        if (Array.isArray(track[i])) {
+                            time = track[i][1];
+                        } else {
+                            time = track[i];
+                        }
+
+                        if (time > maxTime) {
+                            maxTime = time;
                         }
                     }
                 }
@@ -79,7 +86,7 @@ define(function () {
             var prop, i,
                 begin = time + _.receptorTime(),
                 end = time - (display - _.receptorTime()),
-                track, trackLength,
+                track, trackLength, isLongNote = false,
                 result = {};
 
             for (lane in sequences) {
@@ -88,7 +95,15 @@ define(function () {
                     trackLength = track.length;
                     result[lane] = [];
                     for (i = 0; i < trackLength; i += 1) {
-                        result[lane].push(timeToHeightRevert(track[i], time)); 
+                        isLongNote = Array.isArray(track[i]);
+                        if (isLongNote) {
+                            result[lane].push([
+                                timeToHeightRevert(track[i][0], time),
+                                timeToHeightRevert(track[i][1], time)
+                                ]);
+                        } else {
+                            result[lane].push(timeToHeightRevert(track[i], time));
+                        }
                     }
                 }
             }
@@ -105,7 +120,7 @@ define(function () {
         _.hit = function (lane, time) {
             var track = _.availableNotes(lane, time, true),
                 trackLength = track.length,
-                i, timediff,
+                i, timediff, isLongNote = false,
                 result = void 0,
                 boo = 180,
                 good = 135,
@@ -114,7 +129,12 @@ define(function () {
                 marvelous = 21.5;
             
             for (i = 0; i < trackLength; i += 1) {
-                timeDiff = Math.abs(track[i].time - time);
+                isLongNote = Array.isArray(track[i].time);
+                if (isLongNote) {
+                    timeDiff = Math.abs(track[i].time[0] - time);
+                } else {
+                    timeDiff = Math.abs(track[i].time - time);
+                }
 
                 if (timeDiff <= marvelous) {
                     result = "Marvelous";
@@ -132,13 +152,31 @@ define(function () {
                     result = "Boo";
                     score.boo += 1;
                 }
-                
-                if (result !== void 0) {
+               
+                // If hit have a result we remove the note
+                if (result !== void 0 && !isLongNote) {
                     sequences[lane].splice(track[i].index, 1);
+                }
+
+                if (result !== void 0 && isLongNote) {
+                    currentLongNotes[lane] = track[i].time;
+                }
+
+                if (result !== void 0) {
                     return result;
                 }
             }
             
+            return false;
+        };
+
+        _.release = function (lane, time) {
+            if (currentLongNotes[lane] === void 0) return false;
+
+            if (currentLongNotes[lane][1] <= time) {
+                return "Ok";
+            }
+            currentLongNotes[lane] = void 0;
             return false;
         };
         
@@ -149,10 +187,17 @@ define(function () {
                 begin = time + _.receptorTime(),
                 end = time - (display - _.receptorTime()),
                 track = sequences[lane],
-                trackLength = track.length;
+                trackLength = track.length,
+                isRegularNoteOk = false, 
+                isLongNoteOk = false;
                 
             for (i = 0; i < trackLength; i += 1) {
-                if (track[i] >= end && track[i] <= begin) {
+                isRegularNoteOk = track[i] >= end && track[i] <= begin;
+                isLongNoteOk = Array.isArray(track[i]) 
+                            && (  track[i][0] >= end && track[i][0] <= begin 
+                               || track[i][1] >= end && track[i][1] <= begin);
+
+                if (isRegularNoteOk || isLongNoteOk) {
                     if (hasIndex) {
                         result.push( { time : track[i], index : i }); 
                     } else {
@@ -168,6 +213,15 @@ define(function () {
         _.maxTime = function() {
             return maxTime;
         }
+
+        _.hasHoldNote = function(lane, time) {
+            if (currentLongNotes[lane] === void 0) return false;
+            if (currentLongNotes[lane][0] <= time && currentLongNotes[lane][1] >= time) {
+                return true;
+            }
+            return false;
+        }
+
     };
 });
     
