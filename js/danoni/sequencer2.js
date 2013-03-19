@@ -128,6 +128,7 @@ define(function () {
                 perfect = 43,
                 marvelous = 21.5;
             
+            if (_.hasHoldNote(lane, time)) return false;
             for (i = 0; i < trackLength; i += 1) {
                 isLongNote = Array.isArray(track[i].time);
                 if (isLongNote) {
@@ -171,9 +172,22 @@ define(function () {
         };
 
         _.release = function (lane, time) {
-            if (currentLongNotes[lane] === void 0) return false;
+            var track = sequences[lane],
+                trackLength = track.length,
+                l = currentLongNotes[lane],
+                i;
 
-            if (currentLongNotes[lane][1] <= time) {
+            if (l === void 0) return false;
+
+            for (i = 0; i < trackLength; i += 1) {
+                if (Array.isArray(track[i]) && 
+                    (track[i][0] === l[0] && track[i][1] === l[1])) {
+                    
+                    sequences[lane].splice(i, 1);
+                }
+            }
+
+            if (l[1] <= time) {
                 return "Ok";
             }
             currentLongNotes[lane] = void 0;

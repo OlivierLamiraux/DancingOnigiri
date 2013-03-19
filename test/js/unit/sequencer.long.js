@@ -6,11 +6,15 @@
 define(["danoni/sequencer2"], function(Sequencer) {
     return function() {
         var s;
-        var seq = [200, 800, [1000, 1500]];
         module( "Sequencer Long Notes", {
             setup : function() {
                 s = new Sequencer();
-                s.sequences({ 0 : seq });
+                s.sequences({ 0 : [200, 800, [1000, 1500]] });
+                console.log('setup');
+            },
+            teardown : function() {
+                s = void 0;
+                console.log('teardown');
             }
         });
 
@@ -31,12 +35,14 @@ define(["danoni/sequencer2"], function(Sequencer) {
             equal(resultRelease, "Ok", "Release is Ok");
         });
 
-        test("Good Hit, Bad release", function() {
+        test("Good Hit, Bad release", function(xx) {
             var resultHit = s.hit(0, 1000);
             var resultRelease = s.release(0, 1300);
-            
+            var available = s.availableNotes(0, 1301); 
+
             ok(resultHit, "Hit is Ok");
             equal(resultRelease, false, "Bad Release is Ok");
+            deepEqual(available, [], "Long note no more available");
         });
 
         test("Release without good hit", function() {
