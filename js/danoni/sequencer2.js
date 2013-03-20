@@ -8,7 +8,7 @@ define(function () {
             options = options || {},
             screenHeight = options.height || 420,
             display = options.display || 1000,
-            receptor = options.receptor || 50
+            receptor = options.receptor || 50,
             sequences = {},
             currentLongNotes = {},
             maxTime = 0,
@@ -57,7 +57,7 @@ define(function () {
         };
 
         _.sequences = function(seq) {
-            var i, track, trackLength, time = 0;
+            var i, lane, track, trackLength, time = 0;
              
             if (seq ===  undefined) return sequences;
 
@@ -83,7 +83,7 @@ define(function () {
 
         // Return all notes available for display
         _.heightNotes = function(time) {
-            var prop, i,
+            var prop, i, lane,
                 begin = time + _.receptorTime(),
                 end = time - (display - _.receptorTime()),
                 track, trackLength, isLongNote = false,
