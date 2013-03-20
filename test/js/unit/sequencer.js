@@ -179,5 +179,15 @@ define(["danoni/sequencer2", "text!datas/sequences.json"], function(Sequencer, j
             
             equal(s.maxTime(), expected, "maxTime is ok")
         })
+
+        test("checkMiss", function() {
+            var s = new Sequencer();
+            s.sequences({ 0 : [0, 200, 800] });
+
+            s.checkMiss(1500);
+
+            deepEqual(s.heightNotes(0), { 0 : [] }, "No notes availables");
+            equal(s.score("miss"), 3, "Miss 3 notes");
+        });
     }
 });

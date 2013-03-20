@@ -3,9 +3,9 @@
  */
 define(function () {
     return function(options) {
+        options = options || {};
         // Private
         var _ = this,
-            options = options || {},
             screenHeight = options.height || 420,
             display = options.display || 1000,
             receptor = options.receptor || 50,
@@ -16,7 +16,8 @@ define(function () {
                       good : 0,
                       great :0,
                       perfect : 0,
-                      marvelous : 0
+                      marvelous : 0,
+                      miss : 0
                     };
             
         _.height = function(h) {
@@ -222,11 +223,11 @@ define(function () {
             }
             
             return result;
-        }
+        };
         
         _.maxTime = function() {
             return maxTime;
-        }
+        };
 
         _.hasHoldNote = function(lane, time) {
             if (currentLongNotes[lane] === void 0) return false;
@@ -234,7 +235,30 @@ define(function () {
                 return true;
             }
             return false;
-        }
+        };
+
+        _.checkMiss = function(time) {
+            var i, lane, track, trackLength,
+                recordIndex = [];
+
+            for (lane in sequences) {
+                if (sequences.hasOwnProperty(lane)) {
+                    track = sequences[lane];
+                    trackLength = track.length;
+                    for (i = 0; i < trackLength; i += 1) {
+                        if (track[i] < time + 180) { // 180 = Boo TODO variable de class
+                            track.splice(i, 1);
+                            score.miss += 1;
+                            i = -1;
+                        }
+                    }
+                }
+            }
+        };
+
+        _.score = function(type) {
+            return score[type] || 0;
+        };
 
     };
 });
