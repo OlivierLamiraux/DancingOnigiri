@@ -182,12 +182,12 @@ define(["danoni/sequencer2", "text!datas/sequences.json"], function(Sequencer, j
 
         test("checkMiss", function() {
             var s = new Sequencer();
-            s.sequences({ 0 : [0, 200, 800] });
+            s.sequences({ 0 : [0, 200, 800, [801, 803]] });
 
-            s.checkMiss(1500);
+            s.checkMiss(2000);
 
             deepEqual(s.heightNotes(0), { 0 : [] }, "No notes availables");
-            equal(s.score("miss"), 3, "Miss 3 notes");
+            equal(s.score("miss"), 4, "Miss 4 notes");
         });
     }
 });

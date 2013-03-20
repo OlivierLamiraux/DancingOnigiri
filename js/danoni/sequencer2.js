@@ -11,6 +11,7 @@ define(function () {
             receptor = options.receptor || 50,
             sequences = {},
             currentLongNotes = {},
+            missedLongNotes = {},
             maxTime = 0,
             score = { boo : 0,
                       good : 0,
@@ -84,7 +85,7 @@ define(function () {
 
         // Return all notes available for display
         _.heightNotes = function(time) {
-            var prop, i, lane,
+            var i, lane,
                 begin = time + _.receptorTime(),
                 end = time - (display - _.receptorTime()),
                 track, trackLength, isLongNote = false,
@@ -112,12 +113,32 @@ define(function () {
             return result;
         };
 
-        var timeToHeightRevert = function (time, origin) {
-            var relatif = time - origin;
-            
-            return _.receptorRevert() - ((relatif / _.receptorTime()) * _.receptorHeight());
-        };
-        
+        _.missedHeightLongNotes = function(time) {
+            var lane, track, trackLength,
+                i, result = {},
+                begin = time + _.receptorTime(),
+                end = time - (display - _.receptorTime());
+
+            for (lane in missedLongNotes) {
+                if (missedLongNotes.hasOwnProperty(lane)) {
+                    track = missedLongNotes[lane];
+                    trackLength = track.length;
+                    result[lane] = [];
+                    for (i = 0; i < trackLength; i += 1) {
+                        if (  track[i][0] >= end && track[i][0] <= begin 
+                           || track[i][1] >= end && track[i][1] <= begin) {
+                            result[lane].push([
+                                timeToHeightRevert(track[i][0], time),
+                                timeToHeightRevert(track[i][1], time)
+                                ]);
+                        }
+                    }
+                }
+            }
+            return result;
+
+        }
+
         _.hit = function (lane, time) {
             var track = _.availableNotes(lane, time, true),
                 trackLength = track.length,
@@ -239,14 +260,25 @@ define(function () {
 
         _.checkMiss = function(time) {
             var i, lane, track, trackLength,
+                isMissed;
                 recordIndex = [];
-
+            
+            time = time + 180;// 180 = Boo TODO variable de class
             for (lane in sequences) {
                 if (sequences.hasOwnProperty(lane)) {
                     track = sequences[lane];
                     trackLength = track.length;
                     for (i = 0; i < trackLength; i += 1) {
-                        if (track[i] < time + 180) { // 180 = Boo TODO variable de class
+                        isMissed = false;
+                        if (isLongNote(track[i]) && track[i][1] < time) {
+                            isMissed = true;
+                            missedLongNotes[lane] = missedLongNotes[lane] || [];
+                            missedLongNotes[lane].push(track[i]);
+                        } else if (track[i] < time) { 
+                            isMissed = true;
+                        }
+
+                        if (isMissed) {
                             track.splice(i, 1);
                             score.miss += 1;
                             i = -1;
@@ -259,6 +291,17 @@ define(function () {
         _.score = function(type) {
             return score[type] || 0;
         };
+        
+        var timeToHeightRevert = function (time, origin) {
+            var relatif = time - origin;
+            
+            return _.receptorRevert() - ((relatif / _.receptorTime()) * _.receptorHeight());
+        };
+
+        var isLongNote = function(note) {
+            return Array.isArray(note);
+        }
+        
 
     };
 });

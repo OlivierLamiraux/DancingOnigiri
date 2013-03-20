@@ -67,6 +67,14 @@ define(["danoni/sequencer2"], function(Sequencer) {
             this.s.hit(0, 1000);
             ok(!this.s.hit(0, 1000), "can't hit multi time ok");
         });
+
+        test("Missed Long note must be available for information", function() {
+            this.s.checkMiss(2000);
+
+            var missedNotes = this.s.missedHeightLongNotes(1000);
+
+            deepEqual(missedNotes, { 0 : [[370, 160]] }, "missedHeightLongNotes Ok");
+        });
         
     };
 });
