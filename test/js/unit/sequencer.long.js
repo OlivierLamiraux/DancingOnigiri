@@ -9,7 +9,6 @@ define(["danoni/sequencer2"], function(Sequencer) {
             setup : function() {
                 this.s = new Sequencer();
                 this.s.sequences({ 0 : [200, 800, [1000, 1500]] });
-                console.log('setup');
             }
         });
 

@@ -1,0 +1,23 @@
+{
+  "name": "DancingOnigiri",
+  "version": "0.0.0",
+  "description": "DancingOrigini ==============",
+  "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/OlivierLamiraux/DancingOnigiri.git"
+  },
+  "author": "",
+  "license": "BSD",
+  "readmeFilename": "README.md",
+  "gitHead": "de57f26b7315c1459de1cbe288b6e1d158009164",
+  "devDependencies": {
+    "grunt": "~0.4.1"
+  }
+}
