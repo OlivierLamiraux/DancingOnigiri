@@ -3,7 +3,7 @@
  * 
  * Long note is array with [begin, end]
  */
-define(["danoni/sequencer2"], function(Sequencer) {
+define(["danoni/sequencer"], function(Sequencer) {
     return function() {
         module( "Sequencer Long Notes", {
             setup : function() {

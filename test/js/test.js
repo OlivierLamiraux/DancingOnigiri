@@ -3,9 +3,6 @@
  */
 requirejs.config({
     baseUrl: "../js",
-    map : {
-        sequencer : 'danoni/sequencer2'
-    },
     paths: {
         unit : '../test/js/unit',
         datas : '../datas'
@@ -18,7 +15,7 @@ requirejs.config({
 });
 QUnit.stop();
 require(
-    [ "unit/sequencer", "unit/sequencer.long" ],
+    [ "unit/sequencer", "unit/sequencer_LongNotes" ],
     function(unit0, unit1) {
         QUnit.start();
         unit0();

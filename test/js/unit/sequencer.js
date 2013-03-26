@@ -1,7 +1,7 @@
 /**
  * @author OLAMIRAUX
  */
-define(["danoni/sequencer2", "text!datas/sequences.json"], function(Sequencer, jsonText) {
+define(["danoni/sequencer", "text!datas/sequences.json"], function(Sequencer, jsonText) {
     return function() {
         module( "Sequencer" );
     

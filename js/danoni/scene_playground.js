@@ -1,7 +1,7 @@
 /**
  * @author Olivier Lamiraux
  */
-define(["danoni/sequencer2", "text!datas/sequencesTest.json"], function (Sequencer, seqJson) {
+define(["danoni/sequencer", "text!datas/sequencesTest.json"], function (Sequencer, seqJson) {
     return function (Q) {
 
         var laneX = [25, 70, 120, 170, 215],

@@ -1,78 +1,331 @@
 /**
  * @author Olivier Lamiraux
  */
+/*global define */
 define(function () {
-    return function(Q, options) {
+    "use strict";
+    return function (options) {
         options = options || {};
-        var screenHeight = options.height || 420;
+        // Private
+        var $ = this,
+            screenHeight = options.height || 420,
+            display = options.display || 1000,
+            receptor = options.receptor || 50,
+            sequences = {},
+            currentLongNotes = {},
+            missedLongNotes = {},
+            maxTime = 0,
+            score = {
+                boo: 0,
+                good: 0,
+                great: 0,
+                perfect: 0,
+                marvelous: 0,
+                miss: 0
+            };
 
-        var beginRange = 10; // secondes
-        var endRange = 50; // secondes
-        var left_data=[2205,2216,2373,2383,2791,2823,2854,2885,2927,2969,3011,
-        3053,3095,3136,3178,3194,3220,3262,3304,3346,3387,3429,3471,3513,3523,3534,3544,5404,
-        5422,5476,5530,5692,5710,5764,5818,5980,5998,6052,6106,6268,6304,6340,6376,6412,6448,
-        6484,6520,6556,6592,6628,6664,6700,6736,6772,6808,6826,6916,6943,7060,7087,7204,7276,8005,
-        8023,8041,8059,8149,8473,9040,9366,9384,9438,9492,9654,9672,9726,9780,9942,9978,9987,10014,
-        10050,10059,10086,10122,10131,10158,10194,10203,10230,10266,10275,10302,10338,10347,10374,
-        10410,10419,10446,10482,10500,10590,10617,10734,10761,10878,10950,10968,11013,11058,11094,
-        11130,11166,11202,11238,11274,11310,11346,11382,11418,11454,11490,11526,11562,11598,11634];
-        
-        var down_data=[2906,2948,2990,3032,3074,3115,3157,3199,3241,3325,3408,3492,5449,5503,5737,
-        5791,6025,6079,6889,6970,7033,7114,7222,7312,7384,8167,8365,8383,8401,8419,9067,9411,9465,
-        9699,9753,10491,10509,10563,10644,10707,10788,10896,10959,10977,11004,11067,11139,11211,
-        11283,11355,11427,11499,11571,11643];
-        
-        var up_data=[3283,3367,3450,6844,6988,7132,7240,7348,8077,8095,8113,8131,8185,8257,8275,8437,
-        8455,8491,9094,10518,10536,10662,10680,10806,10824,10914,10995,11031,11049,11076];
-        
-        var right_data=[2205,2216,2373,2383,2807,2838,2864,6268,6556,6772,7177,7258,8203,8221,8239,
-        8293,8311,8329,8347,9121,9942,10230,10851,10932,10986,11022,11040,11085,11112,11148,11184,
-        11220,11256,11292,11328,11364,11373,11400,11436,11472,11508,11544,11580,11616,11652,11661];
-        
-        var space_data=[2289,2331,2456,2498,2875,3210,3544,5116,5134,5161,5188,5215,5242,5404,5422,
-        5449,5476,5503,5530,6286,6322,6358,6394,6430,6466,6502,6538,6547,6574,6610,6646,6682,6718,
-        7294,7330,7366,7402,7438,7474,7510,7546,7582,7618,7654,7690,7726,7762,7798,7834,7870,7906,
-        7942,7978,9040,9067,9094,9121,9366,9384,9411,9438,9465,9492,9654,9672,9699,9726,9753,9780,
-        9960,9996,10032,10068,10104,10140,10176,10212,10221,10248,10284,10320,10356,10392,10428,
-        10464,11112,11148,11184,11220,11256,11292,11328,11364,11400,11436,11472,11508,11544,11580,
-        11616,11652,11679,11697,11715,11733,11751,11769,11787,11805,11823,11841,11859,11877,11895,
-        11913,11931,11949,11967,11985,12003,12021,12039,12057,12075,12093,12111,12129,12147,12165,15410];
-        
-        this.notes = function(time) {
-            var l0 = [], 
-                l1 = [], 
-                l2 = [], 
-                l3 = [], 
-                l4 = [];
-            
-            var populate = function(lane) {
-                return function(p) {
-                   var begin = time-beginRange;
-                   var end = time+endRange;
-                   var range = beginRange + endRange;
-                   
-                   var relatifP = p - begin;
-                   var y = screenHeight - ((relatifP / range) * screenHeight);
-                   
-                   if ( p > begin &&  p < end) {
-                       lane.push(y);
-                   }
+        function timeToHeightRevert(time, origin) {
+            var relatif = time - origin;
+
+            return $.receptorRevert() - ((relatif / $.receptorTime()) * $.receptorHeight());
+        }
+
+        function isLongNote(note) {
+            return Array.isArray(note);
+        }
+
+        $.height = function (h) {
+            if (h === undefined) { return screenHeight; }
+            if (typeof h !== "number") { throw "must be a number"; }
+            if (h < 0) { throw "must be greater than 0"; }
+
+            screenHeight = h;
+        };
+
+        $.display = function (d) {
+            if (d === undefined) { return display; }
+            if (typeof d !== "number") { throw "must be a number"; }
+            if (d < 0) { throw "must be greater than 0"; }
+
+            display = d;
+        };
+
+        $.receptor = function (r) {
+            if (r === undefined) { return receptor; }
+            if (typeof r !== "number") { throw "must be a number"; }
+            if (r < 0) { throw "must be greater than 0"; }
+            if (r > screenHeight) { throw "must be lower than height"; }
+
+            receptor = r;
+        };
+
+        $.receptorRevert = function () {
+            return screenHeight - receptor;
+        };
+
+        $.receptorHeight = function () {
+            return screenHeight - receptor;
+        };
+
+        $.receptorTime = function () {
+            return (screenHeight - receptor) / screenHeight * display;
+        };
+
+        $.sequences = function (seq) {
+            var i, lane, track, trackLength, time = 0;
+
+            if (seq === undefined) { return sequences; }
+
+            sequences = seq;
+            for (lane in sequences) {
+                if (sequences.hasOwnProperty(lane)) {
+                    track = sequences[lane];
+                    trackLength = track.length;
+                    for (i = 0; i < trackLength; i += 1) {
+                        if (Array.isArray(track[i])) {
+                            time = track[i][1];
+                        } else {
+                            time = track[i];
+                        }
+
+                        if (time > maxTime) {
+                            maxTime = time;
+                        }
+                    }
                 }
-            };
-            Q._each(left_data, populate(l0));
-            Q._each(down_data, populate(l1));
-            Q._each(space_data, populate(l2));
-            Q._each(up_data, populate(l3));
-            Q._each(right_data, populate(l4));
-            
-            return {
-                0 : l0,
-                1 : l1,
-                2 : l2,
-                3 : l3,
-                4 : l4
-            };
+            }
+        };
+
+        // Return all notes available for display
+        $.heightNotes = function (time) {
+            var i,
+                lane,
+                begin = time + $.receptorTime(),
+                end = time - (display - $.receptorTime()),
+                track,
+                trackLength,
+                isLongNote = false,
+                result = {};
+
+            for (lane in sequences) {
+                if (sequences.hasOwnProperty(lane)) {
+                    track = $.availableNotes(lane, time);
+                    trackLength = track.length;
+                    result[lane] = [];
+                    for (i = 0; i < trackLength; i += 1) {
+                        isLongNote = Array.isArray(track[i]);
+                        if (isLongNote) {
+                            result[lane].push([
+                                timeToHeightRevert(track[i][0], time),
+                                timeToHeightRevert(track[i][1], time)
+                            ]);
+                        } else {
+                            result[lane].push(timeToHeightRevert(track[i], time));
+                        }
+                    }
+                }
+            }
+
+            return result;
+        };
+
+        $.missedHeightLongNotes = function (time) {
+            var lane,
+                track,
+                trackLength,
+                i,
+                result = {},
+                begin = time + $.receptorTime(),
+                end = time - (display - $.receptorTime());
+
+            for (lane in missedLongNotes) {
+                if (missedLongNotes.hasOwnProperty(lane)) {
+                    track = missedLongNotes[lane];
+                    trackLength = track.length;
+                    result[lane] = [];
+                    for (i = 0; i < trackLength; i += 1) {
+                        if ((track[i][0] >= end && track[i][0] <= begin)
+                                || (track[i][1] >= end && track[i][1] <= begin)) {
+                            result[lane].push([
+                                timeToHeightRevert(track[i][0], time),
+                                timeToHeightRevert(track[i][1], time)
+                            ]);
+                        }
+                    }
+                }
+            }
+            return result;
+
+        };
+
+        $.hit = function (lane, time) {
+            var track = $.availableNotes(lane, time, true),
+                trackLength = track.length,
+                i,
+                timeDiff,
+                isLongNote = false,
+                result,
+                boo = 180,
+                good = 135,
+                great = 102,
+                perfect = 43,
+                marvelous = 21.5;
+
+            if ($.hasHoldNote(lane, time)) {
+                return false;
+            }
+
+            for (i = 0; i < trackLength; i += 1) {
+                isLongNote = Array.isArray(track[i].time);
+                if (isLongNote) {
+                    timeDiff = Math.abs(track[i].time[0] - time);
+                } else {
+                    timeDiff = Math.abs(track[i].time - time);
+                }
+
+                if (timeDiff <= marvelous) {
+                    result = "Marvelous";
+                    score.marvelous += 1;
+                } else if (timeDiff <= perfect) {
+                    result = "Perfect";
+                    score.perfect += 1;
+                } else if (timeDiff <= great) {
+                    result = "Great";
+                    score.great += 1;
+                } else if (timeDiff <= good) {
+                    result = "Good";
+                    score.good += 1;
+                } else if (timeDiff <= boo) {
+                    result = "Boo";
+                    score.boo += 1;
+                }
+
+                // If hit have a result we remove the note
+                if (result !== undefined && isLongNote === false) {
+                    sequences[lane].splice(track[i].index, 1);
+                }
+
+                if (result !== undefined && isLongNote === true) {
+                    currentLongNotes[lane] = track[i].time;
+                }
+
+                if (result !== undefined) {
+                    return result;
+                }
+            }
+
+            return false;
+        };
+
+        $.release = function (lane, time) {
+            var track = sequences[lane],
+                trackLength = track.length,
+                longNote = currentLongNotes[lane],
+                i;
+
+            if (longNote === undefined) {
+                return false;
+            }
+
+            for (i = 0; i < trackLength; i += 1) {
+                if (Array.isArray(track[i]) &&
+                        (
+                            track[i][0] === longNote[0] &&
+                            track[i][1] === longNote[1]
+                        )) {
+
+                    sequences[lane].splice(i, 1);
+                }
+            }
+
+            if (longNote[1] <= time) {
+                return "Ok";
+            }
+            currentLongNotes[lane] = undefined;
+            return false;
+        };
+
+        $.availableNotes = function (lane, time, hasIndex) {
+            hasIndex = hasIndex || false;
+
+            var i, result = [],
+                begin = time + $.receptorTime(),
+                end = time - (display - $.receptorTime()),
+                track = sequences[lane],
+                trackLength = track.length,
+                isRegularNoteOk = false,
+                isLongNoteOk = false;
+
+            for (i = 0; i < trackLength; i += 1) {
+                isRegularNoteOk = track[i] >= end && track[i] <= begin;
+                isLongNoteOk = isLongNote(track[i])
+                                && ((track[i][0] >= end && track[i][0] <= begin)
+                                        || (track[i][1] >= end && track[i][1] <= begin));
+
+                if (isRegularNoteOk || isLongNoteOk) {
+                    if (hasIndex) {
+                        result.push({
+                            time: track[i],
+                            index: i
+                        });
+                    } else {
+                        result.push(track[i]);
+                    }
+
+                }
+            }
+
+            return result;
+        };
+
+        $.maxTime = function () {
+            return maxTime;
+        };
+
+        $.hasHoldNote = function (lane, time) {
+            var longNote = currentLongNotes[lane];
+            if (longNote === undefined) {
+                return false;
+            }
+
+            return longNote[0] <= time && longNote[1] >= time;
+        };
+
+        $.checkMiss = function (time) {
+            var i,
+                lane,
+                track,
+                trackLength,
+                isMissed,
+                recordIndex = [];
+
+            time = time + 180; // 180 = Boo TODO variable de class
+            for (lane in sequences) {
+                if (sequences.hasOwnProperty(lane)) {
+                    track = sequences[lane];
+                    trackLength = track.length;
+                    for (i = 0; i < trackLength; i += 1) {
+                        isMissed = false;
+                        if (isLongNote(track[i]) && track[i][1] < time) {
+                            isMissed = true;
+                            missedLongNotes[lane] = missedLongNotes[lane] || [];
+                            missedLongNotes[lane].push(track[i]);
+                        } else if (track[i] < time) {
+                            isMissed = true;
+                        }
+
+                        if (isMissed) {
+                            track.splice(i, 1);
+                            score.miss += 1;
+                            i = -1;
+                        }
+                    }
+                }
+            }
+        };
+
+        $.score = function (type) {
+            return score[type] || 0;
         };
     };
 });
-    
