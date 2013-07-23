@@ -1,5 +1,5 @@
 /**
- * @author OLAMIRAUX
+ * @author Olivier Lamiraux
  * 
  * Long note is array with [begin, end]
  */
@@ -29,7 +29,7 @@ define(["danoni/sequencer"], function(Sequencer) {
             equal(resultRelease, "Ok", "Release is Ok");
         });
 
-        test("Good Hit, Bad release", function(xx) {
+        test("Good Hit, Bad release", function() {
             var resultHit = this.s.hit(0, 1000);
             var resultRelease = this.s.release(0, 1300);
             var available = this.s.availableNotes(0, 1301); 

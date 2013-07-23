@@ -1,5 +1,17 @@
 /**
  * @author Olivier Lamiraux
+ * 
+ * In the sequencer you can have any number of lane.
+ * Each lane is a sequence of notes (an integer) or long notes (an array with 2 integer).
+ * Each note is in millisecond.
+ * 
+ * Exemple :
+ * var seq = new Sequencer();
+ * seq.sequences = {
+ * 	firstLane : [200, 800, [1000, 1500]],
+ *  secondLane : [10, 20, 30],
+ *  ....
+ * };
  */
 /*global define */
 define(function () {

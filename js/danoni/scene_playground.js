@@ -25,7 +25,7 @@ define(["danoni/sequencer", "text!datas/sequencesTest.json"], function (Sequence
             var S = new Sequencer({
                 height: Q.height
             }),
-                sequences = JSON.parse(seqJson);
+            sequences = JSON.parse(seqJson);
             // Init Sequences
             S.sequences(sequences);
 
