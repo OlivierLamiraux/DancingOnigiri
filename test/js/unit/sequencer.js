@@ -51,7 +51,7 @@ define(["danoni/sequencer", "text!datas/sequences.json"], function(Sequencer, js
         test( "define position of the receptor", function() {
             var s = new Sequencer({height:400, display: 1500});
             
-            // Possision of the receptor relative to edge
+            // Position of the receptor relative to edge
             s.receptor(50);
             
             // Assert
@@ -61,21 +61,21 @@ define(["danoni/sequencer", "text!datas/sequences.json"], function(Sequencer, js
             // Exception
             throws(
                 function () { s.receptor("Test") }, 
-                "receptor setter throw exeception when argument is not a number"
+                "receptor setter throw exception when argument is not a number"
             );
             
             throws(
                 function () { s.receptor(-10) }, 
-                "receptor setter throw exeception when argument is < 0"
+                "receptor setter throw exception when argument is < 0"
             );
             
             throws(
                 function () { s.receptor(1000) }, 
-                "receptor setter throw exeception when argument is > height"
+                "receptor setter throw exception when argument is > height"
             );
         });
         
-        test( "define receptor by options in constuctor", function() {
+        test( "define receptor by options in constructor", function() {
             var s = new Sequencer({receptor:50});
             
             equal(s.receptor(), 50, "receptor by options is ok");

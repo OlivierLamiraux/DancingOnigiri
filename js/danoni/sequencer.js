@@ -7,11 +7,11 @@
  * 
  * Exemple :
  * var seq = new Sequencer();
- * seq.sequences = {
+ * seq.sequences ({
  * 	firstLane : [200, 800, [1000, 1500]],
  *  secondLane : [10, 20, 30],
  *  ....
- * };
+ * });
  */
 /*global define */
 define(function () {
@@ -45,7 +45,8 @@ define(function () {
         function isLongNote(note) {
             return Array.isArray(note);
         }
-
+        
+        // Height of the screen the default value is 420
         $.height = function (h) {
             if (h === undefined) { return screenHeight; }
             if (typeof h !== "number") { throw "must be a number"; }
@@ -61,7 +62,8 @@ define(function () {
 
             display = d;
         };
-
+        
+        // Position of the receptor relative to edge
         $.receptor = function (r) {
             if (r === undefined) { return receptor; }
             if (typeof r !== "number") { throw "must be a number"; }
@@ -82,7 +84,8 @@ define(function () {
         $.receptorTime = function () {
             return (screenHeight - receptor) / screenHeight * display;
         };
-
+        
+        // Initialize the sequences of each lane
         $.sequences = function (seq) {
             var i, lane, track, trackLength, time = 0;
 
@@ -109,6 +112,7 @@ define(function () {
         };
 
         // Return all notes available for display
+        // Height of note begin at the bottom of the screen to the top
         $.heightNotes = function (time) {
             var i,
                 lane,
@@ -169,7 +173,9 @@ define(function () {
             return result;
 
         };
-
+        
+        // Hit a note at lane and time
+        // The difference of time inscrease the score
         $.hit = function (lane, time) {
             var track = $.availableNotes(lane, time, true),
                 trackLength = track.length,
@@ -228,7 +234,8 @@ define(function () {
 
             return false;
         };
-
+        
+        // Release for long note
         $.release = function (lane, time) {
             var track = sequences[lane],
                 trackLength = track.length,
@@ -335,7 +342,8 @@ define(function () {
                 }
             }
         };
-
+        
+        // Score by type
         $.score = function (type) {
             return score[type] || 0;
         };
