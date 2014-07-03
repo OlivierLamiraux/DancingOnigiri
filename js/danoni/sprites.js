@@ -14,7 +14,24 @@ define(function() {
               ctx.fillRect(0,0,Q.width,Q.height);
           }
         });
-        
+
+        Q.Sprite.extend("Bar", {
+            init: function(p) {
+                this._super(p, {
+                    color: "green"
+                });
+            },
+            draw: function(ctx) {
+			    ctx.fillStyle = this.p.color;
+			    // Draw a filled rectangle centered at
+			    // 0,0 (i.e. from -w/2,-h2 to w/2, h/2
+			    ctx.fillRect(-this.p.cx,
+						     -this.p.cy,
+						     this.p.w,
+						     this.p.h);
+
+            }
+        });
         Q.Sprite.extend("Arrow", {
           init: function(p) {
             this._super(p,{
